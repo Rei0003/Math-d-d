@@ -1,13 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="lv">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D Matemātikas Cīņa - Nebeidzamais Izdzīvošanas Režīms</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap" rel="stylesheet">
 </head>
 <body>
-  
-  <script src="index.js"></script>
+    <div class="game-container">
+        <header>
+            <h1>Zombiju Katakombas</h1>
+            <p>Atbildi pareizi, lai iegūtu spēku! Cik ilgi tu spēsi izdzīvot?</p>
+            <p class="stats-counter">Pieveikti zombiji: <span id="kill-count">0</span></p>
+        </header>
+
+        <main class="grid-layout">
+            <section class="panel player-panel">
+                <h2>Tavs Varonis</h2>
+                <div class="health-bar-container">
+                    <div id="player-hp-bar" class="health-bar hp-green"></div>
+                    <span id="player-hp-text">Veselība: 50/50</span>
+                </div>
+                <ul class="stats-list">
+                    <li>Spēks: <span id="stat-speks">5</span></li>
+                    <li>Veiklība: <span id="stat-veikliba">5</span></li>
+                    <li>Konstitūcija: <span id="stat-konstitucija">5</span></li>
+                    <li>Intelekts: <span id="stat-intelekts">5</span></li>
+                    <li>Gudrība: <span id="stat-gudriba">5</span></li>
+                    <li>Harizma: <span id="stat-harizma">5</span></li>
+                </ul>
+            </section>
+
+            <section class="panel action-panel">
+                <div id="enemy-section">
+                    <h2>Pretinieks: Zombijs <span class="level-badge">Līmenis <span id="zombie-level">1</span></span></h2>
+                    <div class="health-bar-container">
+                        <div id="zombie-hp-bar" class="health-bar hp-red"></div>
+                        <span id="zombie-hp-text">Zombija HP: 100/100</span>
+                    </div>
+                </div>
+
+                <div id="quiz-section" class="hidden">
+                    <h3>Matemātikas Izaicinājums</h3>
+                    <p id="question-text">Gatavojas jautājumam...</p>
+                    
+                    <div id="choices-container" class="choices-grid">
+                        <button class="btn choice-btn" id="choice-0"></button>
+                        <button class="btn choice-btn" id="choice-1"></button>
+                        <button class="btn choice-btn" id="choice-2"></button>
+                    </div>
+
+                    <p id="reward-text"></p>
+                </div>
+
+                <div id="log-section">
+                    <h3>Notikumu Žurnāls</h3>
+                    <div id="game-log">Piedzīvojums sākas. Tavā priekšā stāv izsalcis Zombijs!</div>
+                </div>
+            </section>
+
+            <section class="panel controls-panel">
+                <h2>Darbības</h2>
+                <button id="btn-quiz" class="btn magic-btn">📚 Mācīties (Iegūt Stats)</button>
+                <button id="btn-attack" class="btn fight-btn">⚔️ Cīnīties</button>
+                <button id="btn-run" class="btn run-btn">🏃‍♂️ Bēgt (Beigt spēli)</button>
+                <button id="btn-restart" class="btn hidden">🔄 Sākt No Jauna</button>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
