@@ -1,0 +1,195 @@
+:root {
+    --bg-color: #0d0d0d;
+    --panel-bg: #1c1c1c;
+    --text-color: #e0d8c0;
+    --accent-color: #8b0000;
+    --border-color: #4a4a4a;
+    --btn-hover: #333;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'MedievalSharp', cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+h1, h2, h3 {
+    font-family: 'Cinzel', serif;
+    text-align: center;
+    margin-top: 0;
+}
+
+.stats-counter {
+    color: #ffcc00;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.game-container {
+    width: 95%;
+    max-width: 1100px;
+    background: #151515;
+    border: 3px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.9);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 20px;
+}
+
+.panel {
+    background: var(--panel-bg);
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+.stats-list {
+    list-style-type: none;
+    padding: 0;
+    font-size: 1.1em;
+}
+
+.stats-list li {
+    padding: 8px 0;
+    border-bottom: 1px dashed #333;
+    display: flex;
+    justify-content: space-between;
+}
+
+.level-badge {
+    font-size: 0.6em;
+    background: #550000;
+    padding: 3px 8px;
+    border-radius: 12px;
+    vertical-align: middle;
+    margin-left: 10px;
+    border: 1px solid #ff4444;
+}
+
+.health-bar-container {
+    background: #000;
+    height: 25px;
+    border-radius: 5px;
+    position: relative;
+    border: 2px solid #555;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.health-bar {
+    height: 100%;
+    width: 100%;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hp-green { background: linear-gradient(90deg, #105a10, #228b22); }
+.hp-red { background: linear-gradient(90deg, #5a0000, #8b0000); }
+
+.health-bar-container span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 0.9em;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+    white-space: nowrap;
+}
+
+#quiz-section {
+    background: #111522;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #2a3457;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+#question-text {
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.choices-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    font-size: 1em;
+    color: white;
+    background: #2a2a2a;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn:hover { 
+    background: var(--btn-hover); 
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.choice-btn { background: #3a3a3a; border-color: #555; font-size: 1.2em; font-family: Arial, sans-serif;}
+.choice-btn:hover { background: #555; border-color: #777; }
+
+.magic-btn { background: #004080; border-color: #0059b3; }
+.magic-btn:hover { background: #0059b3; box-shadow: 0 0 10px #0059b3; }
+.fight-btn { background: #8b0000; border-color: #b30000; }
+.fight-btn:hover { background: #b30000; box-shadow: 0 0 10px #b30000; }
+.run-btn { background: #303030; }
+.run-btn:hover { background: #4a4a4a; }
+
+#log-section {
+    background: #000;
+    padding: 15px;
+    height: 160px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    font-family: 'Courier New', monospace;
+    font-size: 0.95em;
+    color: #c0c0c0;
+    border-radius: 5px;
+}
+
+.hidden { display: none !important; }
+
+/* Scrollbar stilizācija log failam */
+#log-section::-webkit-scrollbar { width: 8px; }
+#log-section::-webkit-scrollbar-track { background: #111; }
+#log-section::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
