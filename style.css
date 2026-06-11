@@ -11,6 +11,9 @@ body {
     margin: 0;
     padding: 0;
     background-image: url("360_F_549874832_odaIb0fUsf27oYS6qXj392f5673mRSW5.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     color: var(--text-color);
     font-family: 'MedievalSharp', cursive;
     display: flex;
