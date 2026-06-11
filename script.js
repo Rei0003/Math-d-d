@@ -15,7 +15,6 @@ let player = {
     }
 };
 
-// Jaunā eliksīru sistēma
 let potions = 0;
 
 const enemyList = [
@@ -71,17 +70,16 @@ const btnAttack = document.getElementById('btn-attack');
 const btnRun = document.getElementById('btn-run');
 const btnRestart = document.getElementById('btn-restart');
 
-// Dinamiska Eliksīra pogas izveide (nav jāmaina HTML!)
+// Dinamiska Eliksīra pogas izveide
 const btnPotion = document.createElement('button');
 btnPotion.id = 'btn-potion';
 if (btnRun) {
-    btnPotion.className = btnRun.className; // Pārkopē stilu no "Bēgt" pogas
+    btnPotion.className = btnRun.className; 
     btnRun.parentNode.insertBefore(btnPotion, btnRestart);
 }
 
 // --- Pamatfunkcijas ---
 
-// Uzlabots auto-scroll žurnālam ar laika aizturi pilnīgai drošībai
 function logMsg(msg, color = "#e0d8c0") {
     const p = document.createElement('p');
     p.style.color = color;
@@ -105,8 +103,6 @@ function updateUI() {
     killCountText.innerText = enemiesKilled;
 
     enemyNameHeading.innerHTML = `Pretinieks: ${enemy.name} <span class="level-badge">Līmenis <span id="zombie-level">${gameLevel}</span></span>`;
-
-    // Atjaunina tekstu uz eliksīra pogas
     btnPotion.innerText = `Malkot eliksīru (${potions})`;
 
     for (let stat in uiStats) {
@@ -156,13 +152,12 @@ function generateMathQuestion() {
     
     let questionStr = "";
     
-    // Atvasinājumi izņemti no saraksta
-    const categories = ["statistika", "kvadratfunkcijas", "logaritmi", "kombinatorika"];
+    // Tikai tīras un saprotamas tēmas (parabolas un atvasinājumi ir izmesti)
+    const categories = ["statistika", "kvadratvienadojumi", "logaritmi", "kombinatorika"];
     const mathCategory = categories[Math.floor(Math.random() * categories.length)];
 
     if (mathCategory === "statistika") {
         if (Math.random() > 0.5) {
-            // Vidējais aritmētiskais (Sakārtotā secībā)
             let a = Math.floor(Math.random() * 10) + 1;
             let b = Math.floor(Math.random() * 10) + 1;
             let c = Math.floor(Math.random() * 10) + 1;
@@ -174,7 +169,6 @@ function generateMathQuestion() {
             currentAnswer = (nums[0] + nums[1] + nums[2] + nums[3]) / 4;
             questionStr = `Kāds ir datu kopas {${nums.join(', ')}} vidējais aritmētiskais?`;
         } else {
-            // Mediāna (Sakārtotā secībā)
             let arr = [
                 Math.floor(Math.random() * 20),
                 Math.floor(Math.random() * 20),
@@ -187,31 +181,18 @@ function generateMathQuestion() {
             questionStr = `Kāda ir datu kopas {${arr.join(', ')}} mediāna?`;
         }
     } 
-    else if (mathCategory === "kvadratfunkcijas") {
-        if (Math.random() > 0.5) {
-            let a = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 3) + 1);
-            let xv = Math.floor(Math.random() * 10) - 5; 
-            let b = -2 * a * xv;
-            let c = Math.floor(Math.random() * 10) - 5;
-            
-            currentAnswer = xv;
-            
-            let bStr = b === 0 ? "" : (b > 0 ? `+ ${b}x` : `- ${Math.abs(b)}x`);
-            let cStr = c === 0 ? "" : (c > 0 ? `+ ${c}` : `- ${Math.abs(c)}`);
-            let aStr = a === 1 ? "" : (a === -1 ? "-" : a);
-            questionStr = `Kāda ir parabolas y = ${aStr}x<sup>2</sup> ${bStr} ${cStr} virsotnes <i>x</i> koordināta?`;
-        } else {
-            let x1 = Math.floor(Math.random() * 10) - 5;
-            let x2 = Math.floor(Math.random() * 10) - 5;
-            let p = -(x1 + x2);
-            let q = x1 * x2;
-            
-            currentAnswer = x1 + x2; 
-            
-            let pStr = p === 0 ? "" : (p > 0 ? `+ ${p}x` : `- ${Math.abs(p)}x`);
-            let qStr = q === 0 ? "" : (q > 0 ? `+ ${q}` : `- ${Math.abs(q)}`);
-            questionStr = `Kāda ir kvadrātvienādojuma x<sup>2</sup> ${pStr} ${qStr} = 0 sakņu summa?`;
-        }
+    else if (mathCategory === "kvadratvienadojumi") {
+        // Vjeta teorēma (sakņu summa: x1 + x2 = -p)
+        let x1 = Math.floor(Math.random() * 10) - 5;
+        let x2 = Math.floor(Math.random() * 10) - 5;
+        let p = -(x1 + x2);
+        let q = x1 * x2;
+        
+        currentAnswer = x1 + x2; 
+        
+        let pStr = p === 0 ? "" : (p > 0 ? `+ ${p}x` : `- ${Math.abs(p)}x`);
+        let qStr = q === 0 ? "" : (q > 0 ? `+ ${q}` : `- ${Math.abs(q)}`);
+        questionStr = `Kāda ir kvadrātvienādojuma x<sup>2</sup> ${pStr} ${qStr} = 0 sakņu summa?`;
     }
     else if (mathCategory === "logaritmi") {
         let base = Math.floor(Math.random() * 4) + 2; 
@@ -288,7 +269,7 @@ function drinkPotion() {
     }
     
     potions--;
-    let healAmount = 35; // Eliksīrs atjauno 35 HP
+    let healAmount = 35; 
     player.hp = Math.min(player.maxHp, player.hp + healAmount);
     
     logMsg(`Tu izdzer sarkanu, burbuļojošu eliksīru un atgūsti <b>${healAmount} HP</b>!`, "#00ffcc");
@@ -338,7 +319,6 @@ function enemyDefeated() {
     
     logMsg(`<b>${enemy.name} ir pieveikts!</b>`, "#ffff00");
 
-    // 65% iespēja, ka pretinieks nomet eliksīru
     if (Math.random() < 0.65) {
         potions++;
         logMsg(`🎉 No pretinieka pīšļiem izkrīt <b>Veselības Eliksīrs</b>! Tu to iebāz somā.`, "#00ffcc");
@@ -351,7 +331,6 @@ function enemyDefeated() {
 
     gameLevel++;
     
-    // Kad pretinieks pieveikts, spēlētājs nedaudz uzelpo (atjauno 20% no max HP bezmaksas)
     let restHeal = Math.floor(player.maxHp * 0.2);
     player.hp = Math.min(player.maxHp, player.hp + restHeal);
     logMsg(`Tu mirkli uzelpo un atgūsti ${restHeal} HP pirms nākamā stāva.`, "#228b22");
@@ -395,7 +374,7 @@ function endGame() {
     btnQuiz.classList.add('hidden');
     btnAttack.classList.add('hidden');
     btnRun.classList.add('hidden');
-    btnPotion.classList.add('hidden'); // Paslēpj eliksīra pogu spēles beigās
+    btnPotion.classList.add('hidden'); 
     btnRestart.classList.remove('hidden');
     quizSection.classList.add('hidden');
 }
@@ -407,7 +386,7 @@ function restartGame() {
     
     gameLevel = 1;
     enemiesKilled = 0;
-    potions = 0; // Atiestata eliksīrus
+    potions = 0; 
 
     let firstEnemyData = enemyList[0];
     enemy = { ...firstEnemyData, maxHp: firstEnemyData.hp };
@@ -419,7 +398,7 @@ function restartGame() {
     btnQuiz.classList.remove('hidden');
     btnAttack.classList.remove('hidden');
     btnRun.classList.remove('hidden');
-    btnPotion.classList.remove('hidden'); // Parāda eliksīra pogu atkal
+    btnPotion.classList.remove('hidden'); 
     btnRestart.classList.add('hidden');
 
     updateUI();
@@ -430,11 +409,10 @@ btnQuiz.addEventListener('click', generateMathQuestion);
 btnAttack.addEventListener('click', attack);
 btnRun.addEventListener('click', runAway);
 btnRestart.addEventListener('click', restartGame);
-btnPotion.addEventListener('click', drinkPotion); // Jaunais klausītājs eliksīram
+btnPotion.addEventListener('click', drinkPotion); 
 
 choiceBtns.forEach(btn => {
     btn.addEventListener('click', handleChoiceClick);
 });
 
-// Sākotnējā UI iestatīšana
 updateUI();
