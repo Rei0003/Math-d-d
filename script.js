@@ -1,4 +1,4 @@
-// --- Spēles Stāvoklis ---
+
 const MAX_PLAYER_HP_CAP = 100;
 const MAX_LEVEL = 10;
 
@@ -29,7 +29,7 @@ let currentAnswer = null;
 let currentRewardStat = null;
 let isGameOver = false;
 
-// --- DOM Elementi ---
+
 const uiStats = {
     Spēks: document.getElementById('stat-speks'),
     Veiklība: document.getElementById('stat-veikliba'),
@@ -61,7 +61,7 @@ const btnAttack = document.getElementById('btn-attack');
 const btnRun = document.getElementById('btn-run');
 const btnRestart = document.getElementById('btn-restart');
 
-// --- Pamatfunkcijas ---
+
 
 function logMsg(msg, color = "#e0d8c0") {
     const p = document.createElement('p');
@@ -96,21 +96,21 @@ function shuffleArray(array) {
     return array;
 }
 
-// Viltus atbilžu ģenerēšana, ņemot vērā, ka atbildes var būt arī negatīvas un nulle
+
 function generateFakeAnswers(correct) {
     let fakes = new Set();
     while (fakes.size < 2) {
-        let offset = Math.floor(Math.random() * 9) - 4; // no -4 līdz 4
+        let offset = Math.floor(Math.random() * 9) - 4; 
         if (offset === 0) offset = 2; 
 
         let fake = correct + offset;
         
-        // Pievienojam tipiskas skolēnu kļūdas
-        if (Math.random() > 0.6) fake = correct * -1; // Zīmes kļūda (ļoti bieži algebrā)
-        if (Math.random() > 0.8 && correct !== 0) fake = correct * 2; // Pareizināts netīšām ar 2
-        if (Math.random() > 0.9) fake = correct + 10; // Uzmanības kļūda desmitos
+        
+        if (Math.random() > 0.6) fake = correct * -1; 
+        if (Math.random() > 0.8 && correct !== 0) fake = correct * 2; 
+        if (Math.random() > 0.9) fake = correct + 10; 
 
-        // Neliela aizsardzība pret `NaN` un dublikātiem, kā arī zīmes zudumiem
+        
         if (fake !== correct && !isNaN(fake)) {
             fakes.add(fake === -0 ? 0 : fake);
         }
@@ -123,7 +123,7 @@ function factorial(n) {
     return n * factorial(n - 1);
 }
 
-// --- Eiropas Vidusskolas Matemātikas Loģika ---
+
 
 function generateMathQuestion() {
     if (isGameOver) return;
@@ -133,23 +133,23 @@ function generateMathQuestion() {
     
     let questionStr = "";
     
-    // Tēmas no kurām izvēlēties - vairs nekādas pamatskolas
+    
     const categories = ["statistika", "kvadratfunkcijas", "logaritmi", "atvasinajumi", "kombinatorika"];
     const mathCategory = categories[Math.floor(Math.random() * categories.length)];
 
     if (mathCategory === "statistika") {
         if (Math.random() > 0.5) {
-            // Vidējais aritmētiskais
+            
             let a = Math.floor(Math.random() * 10) + 1;
             let b = Math.floor(Math.random() * 10) + 1;
             let c = Math.floor(Math.random() * 10) + 1;
             let d = Math.floor(Math.random() * 10) + 1;
             let rem = (a + b + c + d) % 4;
-            d += (4 - rem) % 4; // Nodrošina bezatlikuma dalīšanu ar 4
+            d += (4 - rem) % 4; 
             currentAnswer = (a + b + c + d) / 4;
             questionStr = `Kāds ir datu kopas {${a}, ${b}, ${c}, ${d}} vidējais aritmētiskais?`;
         } else {
-            // Mediāna
+            
             let arr = [
                 Math.floor(Math.random() * 20),
                 Math.floor(Math.random() * 20),
@@ -164,9 +164,9 @@ function generateMathQuestion() {
     } 
     else if (mathCategory === "kvadratfunkcijas") {
         if (Math.random() > 0.5) {
-            // Parabolas virsotne (x koordināta = -b/2a)
+            
             let a = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 3) + 1);
-            let xv = Math.floor(Math.random() * 10) - 5; // xv no -5 līdz 5
+            let xv = Math.floor(Math.random() * 10) - 5; 
             let b = -2 * a * xv;
             let c = Math.floor(Math.random() * 10) - 5;
             
@@ -177,13 +177,13 @@ function generateMathQuestion() {
             let aStr = a === 1 ? "" : (a === -1 ? "-" : a);
             questionStr = `Kāda ir parabolas y = ${aStr}x<sup>2</sup> ${bStr} ${cStr} virsotnes <i>x</i> koordināta?`;
         } else {
-            // Vjeta teorēma (sakņu summa x1 + x2 = -p)
+            
             let x1 = Math.floor(Math.random() * 10) - 5;
             let x2 = Math.floor(Math.random() * 10) - 5;
             let p = -(x1 + x2);
             let q = x1 * x2;
             
-            currentAnswer = x1 + x2; // Kas ir tas pats, kas -p
+            currentAnswer = x1 + x2; 
             
             let pStr = p === 0 ? "" : (p > 0 ? `+ ${p}x` : `- ${Math.abs(p)}x`);
             let qStr = q === 0 ? "" : (q > 0 ? `+ ${q}` : `- ${Math.abs(q)}`);
@@ -191,13 +191,13 @@ function generateMathQuestion() {
         }
     }
     else if (mathCategory === "logaritmi") {
-        let base = Math.floor(Math.random() * 4) + 2; // Bāze 2, 3, 4, 5
-        currentAnswer = Math.floor(Math.random() * 4) + 1; // Pakāpe 1, 2, 3, 4
+        let base = Math.floor(Math.random() * 4) + 2;
+        currentAnswer = Math.floor(Math.random() * 4) + 1; 
         let val = Math.pow(base, currentAnswer);
         questionStr = `Aprēķini: log<sub>${base}</sub>(${val})`;
     }
     else if (mathCategory === "atvasinajumi") {
-        // Funkcijas f(x) = ax^3 + bx^2 atvasinājums f'(1)
+        
         let a = Math.floor(Math.random() * 4) + 1;
         let b = Math.floor(Math.random() * 4) + 1;
         currentAnswer = 3 * a + 2 * b;
@@ -206,12 +206,12 @@ function generateMathQuestion() {
     else if (mathCategory === "kombinatorika") {
         if (Math.random() > 0.5) {
             // Faktoriāls
-            let n = Math.floor(Math.random() * 4) + 4; // 4!, 5!, 6!, 7!
+            let n = Math.floor(Math.random() * 4) + 4; 
             currentAnswer = factorial(n);
             questionStr = `Aprēķini: ${n}! (faktoriāls)`;
         } else {
-            // Kombinācijas: C_n^2 = n(n-1)/2
-            let n = Math.floor(Math.random() * 6) + 4; // no 4 līdz 9
+            
+            let n = Math.floor(Math.random() * 6) + 4; 
             currentAnswer = (n * (n - 1)) / 2;
             questionStr = `Cik dažādos veidos no ${n} elementiem var izvēlēties kombinācijas pa 2? (C<sub>${n}</sub><sup>2</sup>)`;
         }
@@ -221,7 +221,7 @@ function generateMathQuestion() {
     rewardText.innerHTML = `Balva par pareizu atbildi: +2 <b>${currentRewardStat}</b>`;
     rewardText.style.color = "#4da6ff";
     
-    // Ģenerē un sajauc atbildes
+    
     let fakes = generateFakeAnswers(currentAnswer);
     let allAnswers = [currentAnswer, fakes[0], fakes[1]];
     allAnswers = shuffleArray(allAnswers);
@@ -260,7 +260,7 @@ function handleChoiceClick(e) {
     updateUI();
 }
 
-// --- Cīņas un Progresijas Loģika ---
+
 
 function attack() {
     if (isGameOver) return;
@@ -312,10 +312,10 @@ function zombieDefeated() {
     
     player.hp = player.maxHp;
 
-    // Fiksēta progresija līdz 10. līmenim
-    enemy.maxHp = 100 + (gameLevel * 20); // HP no 120 līdz 300
+    
+    enemy.maxHp = 100 + (gameLevel * 20); 
     enemy.hp = enemy.maxHp;
-    enemy.damage = 10 + (gameLevel * 3);  // Dmg no 13 līdz 40
+    enemy.damage = 10 + (gameLevel * 3);  
     
     logMsg(`Priekšā parādās jauns, draudīgs Zombijs! (Līmenis ${gameLevel}/${MAX_LEVEL})`, "#ff4444");
     
@@ -329,7 +329,7 @@ function runAway() {
     endGame();
 }
 
-// --- Spēles Beigu Stāvokļi ---
+
 
 function checkDeath() {
     if (player.hp <= 0) {
@@ -381,7 +381,7 @@ function restartGame() {
     updateUI();
 }
 
-// --- Klausītāji (Event Listeners) ---
+
 btnQuiz.addEventListener('click', generateMathQuestion);
 btnAttack.addEventListener('click', attack);
 btnRun.addEventListener('click', runAway);
@@ -391,5 +391,5 @@ choiceBtns.forEach(btn => {
     btn.addEventListener('click', handleChoiceClick);
 });
 
-// Sākotnējā UI iestatīšana
+
 updateUI();
