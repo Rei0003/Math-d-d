@@ -1,4 +1,4 @@
-
+// --- Spēles Stāvoklis ---
 const MAX_PLAYER_HP_CAP = 100;
 const MAX_LEVEL = 10;
 
@@ -15,21 +15,31 @@ let player = {
     }
 };
 
-let gameLevel = 1;
-let zombiesKilled = 0;
+// Ienaidnieku datu bāze katram no 10 līmeņiem
+const enemyList = [
+    { name: "Sapuvis Zombijs", hp: 120, damage: 13 },
+    { name: "Klabošs Skelets", hp: 140, damage: 16 },
+    { name: "Alu Goblins", hp: 160, damage: 19 },
+    { name: "Orku Karavīrs", hp: 180, damage: 22 },
+    { name: "Asinskārs Vampīrs", hp: 200, damage: 25 },
+    { name: "Tumsas Vilkatis", hp: 220, damage: 28 },
+    { name: "Pazemes Dēmons", hp: 240, damage: 31 },
+    { name: "Nešķīsts Lihs", hp: 260, damage: 34 },
+    { name: "Melnais Pūķis", hp: 280, damage: 37 },
+    { name: "Haosa Lords", hp: 350, damage: 45 } // Boss ir nedaudz spēcīgāks
+];
 
-let enemy = {
-    name: "Zombijs",
-    hp: 100,
-    maxHp: 100,
-    damage: 10
-};
+let gameLevel = 1;
+let enemiesKilled = 0;
+
+// Sākotnējais ienaidnieks
+let enemy = { ...enemyList[0], maxHp: enemyList[0].hp };
 
 let currentAnswer = null;
 let currentRewardStat = null;
 let isGameOver = false;
 
-
+// --- DOM Elementi ---
 const uiStats = {
     Spēks: document.getElementById('stat-speks'),
     Veiklība: document.getElementById('stat-veikliba'),
@@ -41,10 +51,10 @@ const uiStats = {
 
 const playerHpBar = document.getElementById('player-hp-bar');
 const playerHpText = document.getElementById('player-hp-text');
-const zombieHpBar = document.getElementById('zombie-hp-bar');
-const zombieHpText = document.getElementById('zombie-hp-text');
-const zombieLevelText = document.getElementById('zombie-level');
+const enemyHpBar = document.getElementById('zombie-hp-bar');
+const enemyHpText = document.getElementById('zombie-hp-text');
 const killCountText = document.getElementById('kill-count');
+const enemyNameHeading = document.querySelector('#enemy-section h2'); // Dinamiskai vārda maiņai
 
 const gameLog = document.getElementById('game-log');
 const quizSection = document.getElementById('quiz-section');
@@ -61,7 +71,7 @@ const btnAttack = document.getElementById('btn-attack');
 const btnRun = document.getElementById('btn-run');
 const btnRestart = document.getElementById('btn-restart');
 
-
+// --- Pamatfunkcijas ---
 
 function logMsg(msg, color = "#e0d8c0") {
     const p = document.createElement('p');
@@ -77,11 +87,13 @@ function updateUI() {
     playerHpBar.style.width = playerHpPercent + '%';
     playerHpText.innerText = `Veselība: ${player.hp}/${player.maxHp}`;
 
-    let zombieHpPercent = Math.max(0, (enemy.hp / enemy.maxHp) * 100);
-    zombieHpBar.style.width = zombieHpPercent + '%';
-    zombieHpText.innerText = `HP: ${enemy.hp}/${enemy.maxHp}`;
-    zombieLevelText.innerText = gameLevel;
-    killCountText.innerText = zombiesKilled;
+    let enemyHpPercent = Math.max(0, (enemy.hp / enemy.maxHp) * 100);
+    enemyHpBar.style.width = enemyHpPercent + '%';
+    enemyHpText.innerText = `HP: ${enemy.hp}/${enemy.maxHp}`;
+    killCountText.innerText = enemiesKilled;
+
+    // Atjaunina ienaidnieka nosaukumu un līmeni HTML virsrakstā
+    enemyNameHeading.innerHTML = `Pretinieks: ${enemy.name} <span class="level-badge">Līmenis <span id="zombie-level">${gameLevel}</span></span>`;
 
     for (let stat in uiStats) {
         uiStats[stat].innerText = player.stats[stat];
@@ -96,7 +108,6 @@ function shuffleArray(array) {
     return array;
 }
 
-
 function generateFakeAnswers(correct) {
     let fakes = new Set();
     while (fakes.size < 2) {
@@ -105,12 +116,10 @@ function generateFakeAnswers(correct) {
 
         let fake = correct + offset;
         
-        
         if (Math.random() > 0.6) fake = correct * -1; 
         if (Math.random() > 0.8 && correct !== 0) fake = correct * 2; 
         if (Math.random() > 0.9) fake = correct + 10; 
 
-        
         if (fake !== correct && !isNaN(fake)) {
             fakes.add(fake === -0 ? 0 : fake);
         }
@@ -123,7 +132,7 @@ function factorial(n) {
     return n * factorial(n - 1);
 }
 
-
+// --- Eiropas Vidusskolas Matemātikas Loģika ---
 
 function generateMathQuestion() {
     if (isGameOver) return;
@@ -133,13 +142,11 @@ function generateMathQuestion() {
     
     let questionStr = "";
     
-    
     const categories = ["statistika", "kvadratfunkcijas", "logaritmi", "atvasinajumi", "kombinatorika"];
     const mathCategory = categories[Math.floor(Math.random() * categories.length)];
 
     if (mathCategory === "statistika") {
         if (Math.random() > 0.5) {
-            
             let a = Math.floor(Math.random() * 10) + 1;
             let b = Math.floor(Math.random() * 10) + 1;
             let c = Math.floor(Math.random() * 10) + 1;
@@ -149,7 +156,6 @@ function generateMathQuestion() {
             currentAnswer = (a + b + c + d) / 4;
             questionStr = `Kāds ir datu kopas {${a}, ${b}, ${c}, ${d}} vidējais aritmētiskais?`;
         } else {
-            
             let arr = [
                 Math.floor(Math.random() * 20),
                 Math.floor(Math.random() * 20),
@@ -164,7 +170,6 @@ function generateMathQuestion() {
     } 
     else if (mathCategory === "kvadratfunkcijas") {
         if (Math.random() > 0.5) {
-            
             let a = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 3) + 1);
             let xv = Math.floor(Math.random() * 10) - 5; 
             let b = -2 * a * xv;
@@ -177,7 +182,6 @@ function generateMathQuestion() {
             let aStr = a === 1 ? "" : (a === -1 ? "-" : a);
             questionStr = `Kāda ir parabolas y = ${aStr}x<sup>2</sup> ${bStr} ${cStr} virsotnes <i>x</i> koordināta?`;
         } else {
-            
             let x1 = Math.floor(Math.random() * 10) - 5;
             let x2 = Math.floor(Math.random() * 10) - 5;
             let p = -(x1 + x2);
@@ -191,13 +195,12 @@ function generateMathQuestion() {
         }
     }
     else if (mathCategory === "logaritmi") {
-        let base = Math.floor(Math.random() * 4) + 2;
+        let base = Math.floor(Math.random() * 4) + 2; 
         currentAnswer = Math.floor(Math.random() * 4) + 1; 
         let val = Math.pow(base, currentAnswer);
         questionStr = `Aprēķini: log<sub>${base}</sub>(${val})`;
     }
     else if (mathCategory === "atvasinajumi") {
-        
         let a = Math.floor(Math.random() * 4) + 1;
         let b = Math.floor(Math.random() * 4) + 1;
         currentAnswer = 3 * a + 2 * b;
@@ -205,12 +208,10 @@ function generateMathQuestion() {
     }
     else if (mathCategory === "kombinatorika") {
         if (Math.random() > 0.5) {
-            // Faktoriāls
             let n = Math.floor(Math.random() * 4) + 4; 
             currentAnswer = factorial(n);
             questionStr = `Aprēķini: ${n}! (faktoriāls)`;
         } else {
-            
             let n = Math.floor(Math.random() * 6) + 4; 
             currentAnswer = (n * (n - 1)) / 2;
             questionStr = `Cik dažādos veidos no ${n} elementiem var izvēlēties kombinācijas pa 2? (C<sub>${n}</sub><sup>2</sup>)`;
@@ -220,7 +221,6 @@ function generateMathQuestion() {
     questionText.innerHTML = questionStr;
     rewardText.innerHTML = `Balva par pareizu atbildi: +2 <b>${currentRewardStat}</b>`;
     rewardText.style.color = "#4da6ff";
-    
     
     let fakes = generateFakeAnswers(currentAnswer);
     let allAnswers = [currentAnswer, fakes[0], fakes[1]];
@@ -260,7 +260,7 @@ function handleChoiceClick(e) {
     updateUI();
 }
 
-
+// --- Cīņas un Progresijas Loģika ---
 
 function attack() {
     if (isGameOver) return;
@@ -268,56 +268,54 @@ function attack() {
 
     let damage = Math.floor(player.stats.Spēks * 1.5) + Math.floor(Math.random() * 5);
     enemy.hp -= damage;
-    logMsg(`Tu cērt zombijam ar sava intelekta un spēka apvienojumu, nodarot <b>${damage}</b> bojājumus!`, "orange");
+    logMsg(`Tu pielieto spēku un intelektu! <b>${enemy.name}</b> saņem <b>${damage}</b> bojājumus!`, "orange");
 
     if (enemy.hp <= 0) {
         enemy.hp = 0;
-        zombieDefeated();
+        enemyDefeated();
         return;
     }
 
-    zombieTurn();
+    enemyTurn();
 }
 
-function zombieTurn() {
+function enemyTurn() {
     let dodgeChance = player.stats.Veiklība * 1.5;
     if (dodgeChance > 60) dodgeChance = 60;
 
     let roll = Math.random() * 100;
 
     if (roll < dodgeChance) {
-        logMsg("Zombijs uzbrūk, bet tu pareģo trajektoriju un <b>izvairies</b>!", "#00bfff");
+        logMsg(`<b>${enemy.name}</b> uzbrūk, bet tu pareģo trajektoriju un <b>izvairies</b>!`, "#00bfff");
     } else {
         let reduction = Math.floor(player.stats.Konstitūcija / 3);
         let finalDamage = Math.max(1, enemy.damage - reduction);
         player.hp -= finalDamage;
-        logMsg(`Zombijs triecas tevī, nodarot <b>${finalDamage}</b> bojājumus!`, "red");
+        logMsg(`<b>${enemy.name}</b> triecas tevī, nodarot <b>${finalDamage}</b> bojājumus!`, "red");
     }
     
     updateUI();
     checkDeath();
 }
 
-function zombieDefeated() {
-    zombiesKilled++;
+function enemyDefeated() {
+    enemiesKilled++;
     
     if (gameLevel === MAX_LEVEL) {
         gameWon();
         return;
     }
 
+    logMsg(`<b>${enemy.name} ir pieveikts!</b> Tu atgūsti veselību un kāp tālāk katakombās.`, "#ffff00");
+    
     gameLevel++;
-    
-    logMsg(`<b>Zombijs sasists druskās!</b> Tu atgūsti veselību un kāp tālāk katakombās.`, "#ffff00");
-    
     player.hp = player.maxHp;
 
+    // Ielādē jauno ienaidnieku no saraksta
+    let nextEnemyData = enemyList[gameLevel - 1];
+    enemy = { ...nextEnemyData, maxHp: nextEnemyData.hp };
     
-    enemy.maxHp = 100 + (gameLevel * 20); 
-    enemy.hp = enemy.maxHp;
-    enemy.damage = 10 + (gameLevel * 3);  
-    
-    logMsg(`Priekšā parādās jauns, draudīgs Zombijs! (Līmenis ${gameLevel}/${MAX_LEVEL})`, "#ff4444");
+    logMsg(`Priekšā parādās jauns, daudz bīstamāks pretinieks: <b>${enemy.name}</b>! (Līmenis ${gameLevel}/${MAX_LEVEL})`, "#ff4444");
     
     updateUI();
 }
@@ -329,13 +327,13 @@ function runAway() {
     endGame();
 }
 
-
+// --- Spēles Beigu Stāvokļi ---
 
 function checkDeath() {
     if (player.hp <= 0) {
         player.hp = 0;
         updateUI();
-        logMsg(`Akadēmiskā un fiziskā slodze tevi iznīcināja. <b>Zombijs uzvarēja.</b>`, "red");
+        logMsg(`Akadēmiskā un fiziskā slodze tevi iznīcināja. <b>${enemy.name} tevi pieveica.</b>`, "red");
         endGame();
     }
 }
@@ -344,7 +342,7 @@ function gameWon() {
     isGameOver = true;
     player.hp = player.maxHp;
     updateUI();
-    logMsg(`<b>EPISKA UZVARA!</b> Tu esi pieveicis visus 10 zombijus un pierādījis, ka esi izcilākais matemātikas un cīņas meistars Eiropā!`, "gold");
+    logMsg(`<b>EPISKA UZVARA!</b> Tu esi pieveicis Haosa Lordu un visus pārējos pretiniekus. Tu esi izcilākais matemātikas un cīņas meistars Eiropā!`, "gold");
     endGame();
 }
 
@@ -363,15 +361,14 @@ function restartGame() {
     player.stats = { Spēks: 5, Veiklība: 5, Konstitūcija: 5, Intelekts: 5, Gudrība: 5, Harizma: 5 };
     
     gameLevel = 1;
-    zombiesKilled = 0;
+    enemiesKilled = 0;
 
-    enemy.maxHp = 100;
-    enemy.hp = 100;
-    enemy.damage = 10;
+    let firstEnemyData = enemyList[0];
+    enemy = { ...firstEnemyData, maxHp: firstEnemyData.hp };
     
     isGameOver = false;
 
-    gameLog.innerHTML = "Tu stāvi katakombu ieejā. Tavā priekšā stāv pirmais Zombijs! (Līmenis 1/10)";
+    gameLog.innerHTML = `Tu stāvi katakombu ieejā. Tavā priekšā stāv ${enemy.name}! (Līmenis 1/10)`;
     
     btnQuiz.classList.remove('hidden');
     btnAttack.classList.remove('hidden');
@@ -381,7 +378,7 @@ function restartGame() {
     updateUI();
 }
 
-
+// --- Klausītāji (Event Listeners) ---
 btnQuiz.addEventListener('click', generateMathQuestion);
 btnAttack.addEventListener('click', attack);
 btnRun.addEventListener('click', runAway);
@@ -391,5 +388,5 @@ choiceBtns.forEach(btn => {
     btn.addEventListener('click', handleChoiceClick);
 });
 
-
+// Sākotnējā UI iestatīšana
 updateUI();
