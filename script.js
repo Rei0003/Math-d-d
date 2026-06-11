@@ -306,7 +306,7 @@ function enemyDefeated() {
     
     logMsg(`<b>${enemy.name} ir pieveikts!</b>`, "#ffff00");
 
-    if (Math.random() < 0.65) {
+    if (Math.random() < 0.80) {
         potions++;
         logMsg(`🎉 No pretinieka pīšļiem izkrīt <b>Veselības Eliksīrs</b>! Tu to iebāz somā.`, "#00ffcc");
     }
