@@ -152,8 +152,8 @@ function generateMathQuestion() {
     
     let questionStr = "";
     
-    // Tikai tīras un saprotamas tēmas (parabolas un atvasinājumi ir izmesti)
-    const categories = ["statistika", "kvadratvienadojumi", "logaritmi", "kombinatorika"];
+    // Tikai tīras un ne-konfuzējošas tēmas
+    const categories = ["statistika", "logaritmi", "kombinatorika"];
     const mathCategory = categories[Math.floor(Math.random() * categories.length)];
 
     if (mathCategory === "statistika") {
@@ -181,19 +181,6 @@ function generateMathQuestion() {
             questionStr = `Kāda ir datu kopas {${arr.join(', ')}} mediāna?`;
         }
     } 
-    else if (mathCategory === "kvadratvienadojumi") {
-        // Vjeta teorēma (sakņu summa: x1 + x2 = -p)
-        let x1 = Math.floor(Math.random() * 10) - 5;
-        let x2 = Math.floor(Math.random() * 10) - 5;
-        let p = -(x1 + x2);
-        let q = x1 * x2;
-        
-        currentAnswer = x1 + x2; 
-        
-        let pStr = p === 0 ? "" : (p > 0 ? `+ ${p}x` : `- ${Math.abs(p)}x`);
-        let qStr = q === 0 ? "" : (q > 0 ? `+ ${q}` : `- ${Math.abs(q)}`);
-        questionStr = `Kāda ir kvadrātvienādojuma x<sup>2</sup> ${pStr} ${qStr} = 0 sakņu summa?`;
-    }
     else if (mathCategory === "logaritmi") {
         let base = Math.floor(Math.random() * 4) + 2; 
         currentAnswer = Math.floor(Math.random() * 4) + 1; 
