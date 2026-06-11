@@ -1,5 +1,6 @@
 // --- Spēles Stāvoklis ---
 const MAX_PLAYER_HP_CAP = 100;
+const MAX_LEVEL = 10;
 
 let player = {
     hp: 50,
@@ -21,7 +22,7 @@ let enemy = {
     name: "Zombijs",
     hp: 100,
     maxHp: 100,
-    damage: 8
+    damage: 10
 };
 
 let currentAnswer = null;
@@ -95,26 +96,23 @@ function shuffleArray(array) {
     return array;
 }
 
-// Gudrāka viltus atbilžu ģenerēšana
+// Viltus atbilžu ģenerēšana, ņemot vērā, ka atbildes var būt arī negatīvas un nulle
 function generateFakeAnswers(correct) {
     let fakes = new Set();
     while (fakes.size < 2) {
-        let variance = Math.max(3, Math.ceil(Math.abs(correct) * 0.3)); // 30% novirze vai vismaz 3
-        let offset = Math.floor(Math.random() * (variance * 2 + 1)) - variance;
-        if (offset === 0) offset = 1; 
+        let offset = Math.floor(Math.random() * 9) - 4; // no -4 līdz 4
+        if (offset === 0) offset = 2; 
 
         let fake = correct + offset;
         
-        // Pievienojam tipiskas cilvēciskas kļūdas
-        if (Math.random() > 0.8) fake = correct + 10;
-        if (Math.random() > 0.8) fake = correct - 10;
-        if (Math.random() > 0.9 && correct > 0) fake = correct * 2;
+        // Pievienojam tipiskas skolēnu kļūdas
+        if (Math.random() > 0.6) fake = correct * -1; // Zīmes kļūda (ļoti bieži algebrā)
+        if (Math.random() > 0.8 && correct !== 0) fake = correct * 2; // Pareizināts netīšām ar 2
+        if (Math.random() > 0.9) fake = correct + 10; // Uzmanības kļūda desmitos
 
-        // Ja pareizā atbilde nav negatīva, neļaujam viltus atbildēm būt tādām
-        if (correct >= 0 && fake < 0) fake = Math.abs(fake);
-
-        if (fake !== correct) {
-            fakes.add(fake);
+        // Neliela aizsardzība pret `NaN` un dublikātiem, kā arī zīmes zudumiem
+        if (fake !== correct && !isNaN(fake)) {
+            fakes.add(fake === -0 ? 0 : fake);
         }
     }
     return Array.from(fakes);
@@ -125,7 +123,7 @@ function factorial(n) {
     return n * factorial(n - 1);
 }
 
-// --- Matemātikas Viktorīnas Loģika (Līdz 12. klasei) ---
+// --- Eiropas Vidusskolas Matemātikas Loģika ---
 
 function generateMathQuestion() {
     if (isGameOver) return;
@@ -135,86 +133,88 @@ function generateMathQuestion() {
     
     let questionStr = "";
     
-    // Grūtības un tēmu sadalījums pa līmeņiem
-    let mathCategory = "pamatskola";
-    if (gameLevel >= 4) mathCategory = ["pamatskola", "algebra"].sort(() => 0.5 - Math.random())[0];
-    if (gameLevel >= 8) mathCategory = ["algebra", "logaritmi", "kvadratiska"].sort(() => 0.5 - Math.random())[0];
-    if (gameLevel >= 12) mathCategory = ["logaritmi", "atvasinajumi", "kombinatorika"].sort(() => 0.5 - Math.random())[0];
+    // Tēmas no kurām izvēlēties - vairs nekādas pamatskolas
+    const categories = ["statistika", "kvadratfunkcijas", "logaritmi", "atvasinajumi", "kombinatorika"];
+    const mathCategory = categories[Math.floor(Math.random() * categories.length)];
 
-    // 1.-6. klase: Bāzes aritmētika
-    if (mathCategory === "pamatskola") {
-        let ops = ['+', '-', '*'];
-        if (gameLevel > 2) ops.push('/');
-        const op = ops[Math.floor(Math.random() * ops.length)];
-        let multiplier = 1 + (gameLevel * 0.3);
-
-        if (op === '+') {
-            let num1 = Math.floor((Math.random() * 50 + 10) * multiplier);
-            let num2 = Math.floor((Math.random() * 50 + 10) * multiplier);
-            currentAnswer = num1 + num2;
-            questionStr = `${num1} + ${num2} = ?`;
-        } else if (op === '-') {
-            let num1 = Math.floor((Math.random() * 50 + 50) * multiplier);
-            let num2 = Math.floor((Math.random() * 49 + 1) * multiplier);
-            if (num2 > num1) [num1, num2] = [num2, num1];
-            currentAnswer = num1 - num2;
-            questionStr = `${num1} - ${num2} = ?`;
-        } else if (op === '*') {
-            let num1 = Math.floor(Math.random() * (5 + Math.floor(gameLevel/2))) + 2;
-            let num2 = Math.floor(Math.random() * (5 + Math.floor(gameLevel/2))) + 2;
-            currentAnswer = num1 * num2;
-            questionStr = `${num1} &times; ${num2} = ?`;
-        } else if (op === '/') {
-            let num2 = Math.floor(Math.random() * 10) + 2;
-            currentAnswer = Math.floor(Math.random() * (10 + gameLevel)) + 2;
-            let num1 = currentAnswer * num2;
-            questionStr = `${num1} &divide; ${num2} = ?`;
+    if (mathCategory === "statistika") {
+        if (Math.random() > 0.5) {
+            // Vidējais aritmētiskais
+            let a = Math.floor(Math.random() * 10) + 1;
+            let b = Math.floor(Math.random() * 10) + 1;
+            let c = Math.floor(Math.random() * 10) + 1;
+            let d = Math.floor(Math.random() * 10) + 1;
+            let rem = (a + b + c + d) % 4;
+            d += (4 - rem) % 4; // Nodrošina bezatlikuma dalīšanu ar 4
+            currentAnswer = (a + b + c + d) / 4;
+            questionStr = `Kāds ir datu kopas {${a}, ${b}, ${c}, ${d}} vidējais aritmētiskais?`;
+        } else {
+            // Mediāna
+            let arr = [
+                Math.floor(Math.random() * 20),
+                Math.floor(Math.random() * 20),
+                Math.floor(Math.random() * 20),
+                Math.floor(Math.random() * 20),
+                Math.floor(Math.random() * 20)
+            ];
+            let sorted = [...arr].sort((x, y) => x - y);
+            currentAnswer = sorted[2];
+            questionStr = `Kāda ir datu kopas {${arr.join(', ')}} mediāna?`;
         }
     } 
-    // 7.-9. klase: Algebra un Vienādojumi
-    else if (mathCategory === "algebra") {
+    else if (mathCategory === "kvadratfunkcijas") {
         if (Math.random() > 0.5) {
-            // Lineārs vienādojums: ax + b = c
-            let a = Math.floor(Math.random() * 5) + 2;
-            currentAnswer = Math.floor(Math.random() * 10) + 2; // x
-            let b = Math.floor(Math.random() * 20) + 1;
-            let c = (a * currentAnswer) + b;
-            questionStr = `Atrisini <i>x</i>: ${a}x + ${b} = ${c}`;
+            // Parabolas virsotne (x koordināta = -b/2a)
+            let a = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 3) + 1);
+            let xv = Math.floor(Math.random() * 10) - 5; // xv no -5 līdz 5
+            let b = -2 * a * xv;
+            let c = Math.floor(Math.random() * 10) - 5;
+            
+            currentAnswer = xv;
+            
+            let bStr = b === 0 ? "" : (b > 0 ? `+ ${b}x` : `- ${Math.abs(b)}x`);
+            let cStr = c === 0 ? "" : (c > 0 ? `+ ${c}` : `- ${Math.abs(c)}`);
+            let aStr = a === 1 ? "" : (a === -1 ? "-" : a);
+            questionStr = `Kāda ir parabolas y = ${aStr}x<sup>2</sup> ${bStr} ${cStr} virsotnes <i>x</i> koordināta?`;
         } else {
-            // Saknes un pakāpes
-            currentAnswer = Math.floor(Math.random() * 12) + 2;
-            let val = currentAnswer * currentAnswer;
-            questionStr = `&radic;${val} = ?`;
+            // Vjeta teorēma (sakņu summa x1 + x2 = -p)
+            let x1 = Math.floor(Math.random() * 10) - 5;
+            let x2 = Math.floor(Math.random() * 10) - 5;
+            let p = -(x1 + x2);
+            let q = x1 * x2;
+            
+            currentAnswer = x1 + x2; // Kas ir tas pats, kas -p
+            
+            let pStr = p === 0 ? "" : (p > 0 ? `+ ${p}x` : `- ${Math.abs(p)}x`);
+            let qStr = q === 0 ? "" : (q > 0 ? `+ ${q}` : `- ${Math.abs(q)}`);
+            questionStr = `Kāda ir kvadrātvienādojuma x<sup>2</sup> ${pStr} ${qStr} = 0 sakņu summa?`;
         }
     }
-    // 9.-10. klase: Kvadrātvienādojumu pamati un augstākas pakāpes
-    else if (mathCategory === "kvadratiska") {
-        let base = Math.floor(Math.random() * 4) + 2; // 2, 3, 4, 5
-        let exp = Math.floor(Math.random() * 3) + 2; // 2, 3, 4
-        currentAnswer = Math.pow(base, exp);
-        questionStr = `${base}<sup>${exp}</sup> = ?`;
-    }
-    // 10.-11. klase: Logaritmi
     else if (mathCategory === "logaritmi") {
-        let base = Math.floor(Math.random() * 3) + 2; // bāze 2, 3, vai 4
-        currentAnswer = Math.floor(Math.random() * 4) + 2; // pakāpe (atbilde)
+        let base = Math.floor(Math.random() * 4) + 2; // Bāze 2, 3, 4, 5
+        currentAnswer = Math.floor(Math.random() * 4) + 1; // Pakāpe 1, 2, 3, 4
         let val = Math.pow(base, currentAnswer);
-        questionStr = `log<sub>${base}</sub>(${val}) = ?`;
+        questionStr = `Aprēķini: log<sub>${base}</sub>(${val})`;
     }
-    // 12. klase: Atvasinājumi
     else if (mathCategory === "atvasinajumi") {
-        // Funkcija f(x) = a*x^2. Atvasinājums f'(x) = 2*a*x
-        let a = Math.floor(Math.random() * 3) + 1;
-        let x = Math.floor(Math.random() * 4) + 1;
-        currentAnswer = 2 * a * x;
-        let aStr = a === 1 ? "" : a;
-        questionStr = `Ja f(x) = ${aStr}x<sup>2</sup>, cik ir f'(${x})?`;
+        // Funkcijas f(x) = ax^3 + bx^2 atvasinājums f'(1)
+        let a = Math.floor(Math.random() * 4) + 1;
+        let b = Math.floor(Math.random() * 4) + 1;
+        currentAnswer = 3 * a + 2 * b;
+        questionStr = `Ja f(x) = ${a}x<sup>3</sup> + ${b}x<sup>2</sup>, aprēķini atvasinājuma vērtību punktā f'(1).`;
     }
-    // 12. klase: Kombinatorika / Faktoriāli
     else if (mathCategory === "kombinatorika") {
-        let n = Math.floor(Math.random() * 4) + 3; // 3, 4, 5, 6
-        currentAnswer = factorial(n);
-        questionStr = `${n}! (Faktoriāls) = ?`;
+        if (Math.random() > 0.5) {
+            // Faktoriāls
+            let n = Math.floor(Math.random() * 4) + 4; // 4!, 5!, 6!, 7!
+            currentAnswer = factorial(n);
+            questionStr = `Aprēķini: ${n}! (faktoriāls)`;
+        } else {
+            // Kombinācijas: C_n^2 = n(n-1)/2
+            let n = Math.floor(Math.random() * 6) + 4; // no 4 līdz 9
+            currentAnswer = (n * (n - 1)) / 2;
+            questionStr = `Cik dažādos veidos no ${n} elementiem var izvēlēties kombinācijas pa 2? (C<sub>${n}</sub><sup>2</sup>)`;
+        }
     }
 
     questionText.innerHTML = questionStr;
@@ -226,14 +226,13 @@ function generateMathQuestion() {
     let allAnswers = [currentAnswer, fakes[0], fakes[1]];
     allAnswers = shuffleArray(allAnswers);
 
-    // Piešķir pogām atbildes
     for (let i = 0; i < 3; i++) {
         choiceBtns[i].innerHTML = allAnswers[i];
         choiceBtns[i].dataset.answer = allAnswers[i]; 
     }
     
     quizSection.classList.remove('hidden');
-    logMsg("Tu izsauc sena skolotāja garu, lai iegūtu zināšanas...", "#4da6ff");
+    logMsg("Tu raksti formulas gaisā ar pirkstu...", "#4da6ff");
 }
 
 function handleChoiceClick(e) {
@@ -249,11 +248,11 @@ function handleChoiceClick(e) {
             if (player.hp > player.maxHp) player.hp = player.maxHp;
         }
 
-        logMsg(`Genialitāte! Tavs <b>${currentRewardStat}</b> palielinās par 2.`, "#228b22");
+        logMsg(`Briljanti! Tavs <b>${currentRewardStat}</b> palielinās par 2.`, "#228b22");
     } else {
         const penaltyDamage = 10 + Math.floor(gameLevel * 2);
         player.hp -= penaltyDamage;
-        logMsg(`Kļūda aprēķinos! Pareizā atbilde bija ${currentAnswer}. Matemātikas lāsts tev nodara ${penaltyDamage} bojājumus!`, "red");
+        logMsg(`Kļūda! Pareizā atbilde bija ${currentAnswer}. Tu zaudē fokusu un saņem ${penaltyDamage} bojājumus!`, "red");
         checkDeath();
     }
     
@@ -269,7 +268,7 @@ function attack() {
 
     let damage = Math.floor(player.stats.Spēks * 1.5) + Math.floor(Math.random() * 5);
     enemy.hp -= damage;
-    logMsg(`Tu ietriec savu ieroci zombijā, nodarot <b>${damage}</b> bojājumus!`, "orange");
+    logMsg(`Tu cērt zombijam ar sava intelekta un spēka apvienojumu, nodarot <b>${damage}</b> bojājumus!`, "orange");
 
     if (enemy.hp <= 0) {
         enemy.hp = 0;
@@ -287,12 +286,12 @@ function zombieTurn() {
     let roll = Math.random() * 100;
 
     if (roll < dodgeChance) {
-        logMsg("Zombijs metas tev virsū, bet tu eleganti <b>izvairies</b>!", "#00bfff");
+        logMsg("Zombijs uzbrūk, bet tu pareģo trajektoriju un <b>izvairies</b>!", "#00bfff");
     } else {
         let reduction = Math.floor(player.stats.Konstitūcija / 3);
         let finalDamage = Math.max(1, enemy.damage - reduction);
         player.hp -= finalDamage;
-        logMsg(`Zombijs sašķeļ tavu aizsardzību, nodarot <b>${finalDamage}</b> bojājumus!`, "red");
+        logMsg(`Zombijs triecas tevī, nodarot <b>${finalDamage}</b> bojājumus!`, "red");
     }
     
     updateUI();
@@ -301,18 +300,24 @@ function zombieTurn() {
 
 function zombieDefeated() {
     zombiesKilled++;
+    
+    if (gameLevel === MAX_LEVEL) {
+        gameWon();
+        return;
+    }
+
     gameLevel++;
     
-    logMsg(`<b>Zombijs pārvēršas putekļos!</b> Tavs prāts ir ass kā nazis.`, "#ffff00");
+    logMsg(`<b>Zombijs sasists druskās!</b> Tu atgūsti veselību un kāp tālāk katakombās.`, "#ffff00");
     
     player.hp = player.maxHp;
-    logMsg(`Pēc cīņas tu atvelc elpu un tava veselība atjaunojas uz <b>${player.hp} HP</b>.`, "#228b22");
 
-    enemy.maxHp = 100 + (gameLevel * 25);
+    // Fiksēta progresija līdz 10. līmenim
+    enemy.maxHp = 100 + (gameLevel * 20); // HP no 120 līdz 300
     enemy.hp = enemy.maxHp;
-    enemy.damage = 8 + Math.floor(gameLevel * 3);
+    enemy.damage = 10 + (gameLevel * 3);  // Dmg no 13 līdz 40
     
-    logMsg(`No ēnām izkāpj jauns radījums. (Zombija Līmenis ${gameLevel})`, "#ff4444");
+    logMsg(`Priekšā parādās jauns, draudīgs Zombijs! (Līmenis ${gameLevel}/${MAX_LEVEL})`, "#ff4444");
     
     updateUI();
 }
@@ -320,7 +325,7 @@ function zombieDefeated() {
 function runAway() {
     if (isGameOver) return;
     
-    logMsg(`Tu nespēj izturēt šo kognitīvo un fizisko spriedzi. Tu pieveici ${zombiesKilled} zombijus un aizbēgi kā gļēvulis.`, "#aaa");
+    logMsg(`Eksāmens izrādījās pārāk smags. Tu aizbēgi, paliekot ${gameLevel}. līmenī.`, "#aaa");
     endGame();
 }
 
@@ -330,9 +335,17 @@ function checkDeath() {
     if (player.hp <= 0) {
         player.hp = 0;
         updateUI();
-        logMsg(`Tavs ķermenis un prāts lūzt. <b>Zombijs tevi ir saplosījis.</b> Tu izdzīvoji līdz ${gameLevel}. līmenim.`, "red");
+        logMsg(`Akadēmiskā un fiziskā slodze tevi iznīcināja. <b>Zombijs uzvarēja.</b>`, "red");
         endGame();
     }
+}
+
+function gameWon() {
+    isGameOver = true;
+    player.hp = player.maxHp;
+    updateUI();
+    logMsg(`<b>EPISKA UZVARA!</b> Tu esi pieveicis visus 10 zombijus un pierādījis, ka esi izcilākais matemātikas un cīņas meistars Eiropā!`, "gold");
+    endGame();
 }
 
 function endGame() {
@@ -354,11 +367,11 @@ function restartGame() {
 
     enemy.maxHp = 100;
     enemy.hp = 100;
-    enemy.damage = 8;
+    enemy.damage = 10;
     
     isGameOver = false;
 
-    gameLog.innerHTML = "Atkal katakombās. Tavā priekšā stāv izsalcis Zombijs!";
+    gameLog.innerHTML = "Tu stāvi katakombu ieejā. Tavā priekšā stāv pirmais Zombijs! (Līmenis 1/10)";
     
     btnQuiz.classList.remove('hidden');
     btnAttack.classList.remove('hidden');
