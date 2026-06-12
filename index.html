@@ -1,21 +1,110 @@
 <!DOCTYPE html>
 <html lang="lv">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D&D Matemātikas Cīņa - Nebeidzamais Izdzīvošanas Režīms</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
     <div class="game-container">
-        <header>
+
+        <div id="start-screen" class="start-screen-panel">
+            <h1>Katakombas</h1>
+            <p class="subtitle">D&D Matemātikas Cīņa — Nebeidzamais Izdzīvošanas Režīms</p>
+            <div class="intro-text">
+                <p>Esiet sveicināti, drosmīgais ceļotāj! Jūs gatavojaties ieiet bīstamās katakombās.</p>
+                <p>Katrā stāvā jums pretī stāsies briesmonis. Lai uzvarētu, jums būs jāizmanto gan zobens, gan prāts.
+                    Risiniet matemātikas uzdevumus, lai palielinātu savus statuss, dzeriet eliksīrus un pieveiciet visus
+                    10 līmeņus!</p>
+            </div>
+            <button id="btn-start-game" class="btn magic-btn start-game-btn">SĀKT PIEDZĪVOJUMU</button>
+        </div>
+
+        <div id="difficulty-screen" class="panel difficulty-selection-panel hidden">
+            <h2>Izvēlies sarežģītību</h2>
+            <p class="subtitle">Sarežģītība ietekmē pretinieku dzīvības punktu apjomu</p>
+
+            <div class="difficulty-grid">
+                <div class="difficulty-card" data-diff="easy">
+                    <h3>Viegla</h3>
+                    <p class="diff-desc">Ieteicams demonstrācijai. Visiem pretiniekiem ir par 50% mazāk veselības (HP),
+                        ļaujot ātrāk iziet spēli.</p>
+                    <button class="btn choice-btn select-diff-btn">Izvēlēties Vieglu</button>
+                </div>
+
+                <div class="difficulty-card" data-diff="medium">
+                    <h3>Vidēja</h3>
+                    <p class="diff-desc">Standarta izaicinājums. Pretiniekiem ir parastais veselības apjoms.
+                        Nepieciešama laba stratēģija un precizitāte.</p>
+                    <button class="btn fight-btn select-diff-btn">Izvēlēties Vidēju</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="character-screen" class="panel character-selection-panel hidden">
+            <h2>Izvēlies savu varoni</h2>
+            <p class="subtitle">Katrs tēls nosaka tavas sākuma spējas un veselību</p>
+
+            <div class="characters-grid">
+                <div class="character-card" data-race="elf">
+                    <div class="character-avatar-placeholder">
+                        <img src="elf.png" alt="Elfs">
+                    </div>
+                    <h3>Elfs</h3>
+                    <p class="race-desc">Gudrs un izveicīgs tālšāvējs. Augsts intelekts un ātrums, taču mazāk izturības.
+                    </p>
+                    <ul class="race-stats">
+                        <li><b>Veselība:</b> 40</li>
+                        <li><b>Spēks:</b> 4 | <b>Veiklība:</b> 8</li>
+                        <li><b>Intelekts:</b> 8 | <b>Gudrība:</b> 6</li>
+                    </ul>
+                    <button class="btn magic-btn select-char-btn">Izvēlēties</button>
+                </div>
+
+                <div class="character-card" data-race="human">
+                    <div class="character-avatar-placeholder">
+                        <img src="human.png" alt="Cilvēks">
+                    </div>
+                    <h3>Cilvēks</h3>
+                    <p class="race-desc">Universāls cīnītājs ar sabalansētiem statuss rādītājiem. Piemērots jebkurai
+                        situācijai.</p>
+                    <ul class="race-stats">
+                        <li><b>Veselība:</b> 50</li>
+                        <li><b>Spēks:</b> 5 | <b>Veiklība:</b> 5</li>
+                        <li><b>Intelekts:</b> 5 | <b>Gudrība:</b> 5</li>
+                    </ul>
+                    <button class="btn magic-btn select-char-btn">Izvēlēties</button>
+                </div>
+
+                <div class="character-card" data-race="dwarf">
+                    <div class="character-avatar-placeholder">
+                        <img src="dwarf.png" alt="Rūķis">
+                    </div>
+                    <h3>Rūķis</h3>
+                    <p class="race-desc">Spēcīgs pazemes kalējs. Milzīga izturība un fiziskais spēks, bet vājāks maģijā.
+                    </p>
+                    <ul class="race-stats">
+                        <li><b>Veselība:</b> 65</li>
+                        <li><b>Spēks:</b> 8 | <b>Veiklība:</b> 3</li>
+                        <li><b>Intelekts:</b> 3 | <b>Gudrība:</b> 4</li>
+                    </ul>
+                    <button class="btn magic-btn select-char-btn">Izvēlēties</button>
+                </div>
+            </div>
+        </div>
+
+        <header class="hidden">
             <h1>Katakombas</h1>
             <p>Atbildi pareizi, lai iegūtu spēku! Cik ilgi tu spēsi izdzīvot?</p>
             <p class="stats-counter">Pieveikti ienaidnieki: <span id="kill-count">0</span></p>
         </header>
 
-        <main class="grid-layout">
+        <main class="grid-layout hidden">
             <section class="panel player-panel">
                 <h2>Tavs Varonis</h2>
                 <div class="health-bar-container">
@@ -34,7 +123,8 @@
 
             <section class="panel action-panel">
                 <div id="enemy-section">
-                    <h2>Pretinieks: Zombijs <span class="level-badge">Līmenis <span id="zombie-level">1</span></span></h2>
+                    <h2>Pretinieks: Zombijs <span class="level-badge">Līmenis <span id="zombie-level">1</span></span>
+                    </h2>
                     <div class="health-bar-container">
                         <div id="zombie-hp-bar" class="health-bar hp-red"></div>
                         <span id="zombie-hp-text">Zombija HP: 100/100</span>
@@ -44,7 +134,7 @@
                 <div id="quiz-section" class="hidden">
                     <h3>Matemātikas Izaicinājums</h3>
                     <p id="question-text">Gatavojas jautājumam...</p>
-                    
+
                     <div id="choices-container" class="choices-grid">
                         <button class="btn choice-btn" id="choice-0"></button>
                         <button class="btn choice-btn" id="choice-1"></button>
@@ -64,6 +154,7 @@
                 <h2>Darbības</h2>
                 <button id="btn-quiz" class="btn magic-btn">📚 Mācīties (Iegūt Stats)</button>
                 <button id="btn-attack" class="btn fight-btn">⚔️ Cīnīties</button>
+                <button id="btn-potion" class="btn run-btn">🧪 Malkot eliksīru (0)</button>
                 <button id="btn-run" class="btn run-btn">🏃‍♂️ Bēgt (Beigt spēli)</button>
                 <button id="btn-restart" class="btn hidden">🔄 Sākt No Jauna</button>
             </section>
@@ -72,4 +163,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
